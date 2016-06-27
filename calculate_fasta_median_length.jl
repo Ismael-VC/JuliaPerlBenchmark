@@ -1,37 +1,17 @@
-#! /Applications/Julia-0.4.5.app/Contents/Resources/julia/bin/julia
-# Geoffrey Hannigan
-# Pat Schloss Lab
-# University of Michigan
+#!/usr/bin/env julia
 
-# Read in fasta file
-fastain = open(ARGS[1], "r") # Read in the file
+let    # global scope is slow because of type inference, let introduces a new local scope
 
-LengthArray = []
+fasta_in = open(ARGS[1], "r")
+length_array = []
 
-# println("Creaeting length array...")
-for line in eachline(fastain)
-	if !ismatch(r"^\>", line)
-		newline = chomp(line)
-		LineLength = length(newline)
-		# println(LineLength)
-		push!(LengthArray, LineLength)
-	end
+for line in eachline(fasta_in)
+    if !ismatch(r"^\>", line)
+        push!(length_array, length(chomp(line)))
+    end
 end
 
-# println("Sorting array...")
-SortedArray = sort(LengthArray)
-# println(SortedArray)
-ArrayLength = length(SortedArray)
+close(fasta_in)
+println(median(length_array))
 
-# println("Calculating median length...")
-if ArrayLength % 2 == 0
-	result = SortedArray[div(ArrayLength,2)]
-	println(result)
-else
-	one = SortedArray[div(ArrayLength,2)-1]
-	two = SortedArray[div(ArrayLength,2)-1]
-	result = div((one + two),2)
-	println(result)
-end
-
-close(fastain)
+end    # let
